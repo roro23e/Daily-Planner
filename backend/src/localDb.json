@@ -1,0 +1,282 @@
+{
+  "users": [
+    {
+      "uid": "u1",
+      "name": "Alex Rivera",
+      "email": "alex@taskflow.io",
+      "initials": "AR",
+      "color": "#4F46E5",
+      "role": "admin"
+    },
+    {
+      "uid": "u2",
+      "name": "Jamie Santos",
+      "email": "jamie@taskflow.io",
+      "initials": "JS",
+      "color": "#059669",
+      "role": "manager"
+    },
+    {
+      "uid": "u3",
+      "name": "Morgan Lee",
+      "email": "morgan@taskflow.io",
+      "initials": "ML",
+      "color": "#7C3AED",
+      "role": "member"
+    },
+    {
+      "uid": "u4",
+      "name": "Taylor Kim",
+      "email": "taylor@taskflow.io",
+      "initials": "TK",
+      "color": "#D97706",
+      "role": "member"
+    },
+    {
+      "uid": "u5",
+      "name": "Casey Patel",
+      "email": "casey@taskflow.io",
+      "initials": "CP",
+      "color": "#E11D48",
+      "role": "member"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "t1",
+      "title": "Design login & register screens",
+      "description": "Wireframes and high-fidelity mockups for the full auth flow including error states and mobile breakpoints.",
+      "priority": "high",
+      "status": "done",
+      "assignees": [
+        "u1",
+        "u2"
+      ],
+      "dueDate": "2026-06-18",
+      "tags": [
+        "design",
+        "auth"
+      ],
+      "commentCount": 3,
+      "attachmentCount": 1,
+      "createdBy": "u1",
+      "createdAt": "2026-06-10"
+    },
+    {
+      "id": "t2",
+      "title": "Firebase Auth integration",
+      "description": "Wire up email/password and Google OAuth. Handle token refresh and session persistence in localStorage.",
+      "priority": "high",
+      "status": "done",
+      "assignees": [
+        "u2"
+      ],
+      "dueDate": "2026-06-20",
+      "tags": [
+        "backend",
+        "auth"
+      ],
+      "commentCount": 5,
+      "attachmentCount": 0,
+      "createdBy": "u1",
+      "createdAt": "2026-06-11"
+    },
+    {
+      "id": "t3",
+      "title": "Build Express REST API",
+      "description": "CRUD endpoints for users and tasks. Middleware for Firebase token verification and RBAC.",
+      "priority": "high",
+      "status": "in-progress",
+      "assignees": [
+        "u3",
+        "u4"
+      ],
+      "dueDate": "2026-06-28",
+      "tags": [
+        "backend",
+        "api"
+      ],
+      "commentCount": 2,
+      "attachmentCount": 2,
+      "createdBy": "u2",
+      "createdAt": "2026-06-13"
+    },
+    {
+      "id": "t4",
+      "title": "Task assignment feature",
+      "description": "Allow managers and admins to assign tasks to one or more team members. Trigger notifications on assignment.",
+      "priority": "high",
+      "status": "in-progress",
+      "assignees": [
+        "u1"
+      ],
+      "dueDate": "2026-06-27",
+      "tags": [
+        "feature"
+      ],
+      "commentCount": 7,
+      "attachmentCount": 0,
+      "createdBy": "u1",
+      "createdAt": "2026-06-14"
+    },
+    {
+      "id": "t5",
+      "title": "Dashboard analytics",
+      "description": "Display task completion rates, team workload distribution, and a burndown chart using Recharts.",
+      "priority": "medium",
+      "status": "in-progress",
+      "assignees": [
+        "u2",
+        "u5"
+      ],
+      "dueDate": "2026-07-01",
+      "tags": [
+        "frontend",
+        "data"
+      ],
+      "commentCount": 1,
+      "attachmentCount": 3,
+      "createdBy": "u2",
+      "createdAt": "2026-06-15"
+    },
+    {
+      "id": "t6",
+      "title": "Role-based access control",
+      "description": "Implement admin / manager / member roles. Hide or disable UI affordances based on the current user's role.",
+      "priority": "medium",
+      "status": "todo",
+      "assignees": [
+        "u3"
+      ],
+      "dueDate": "2026-07-03",
+      "tags": [
+        "backend",
+        "rbac"
+      ],
+      "commentCount": 0,
+      "attachmentCount": 0,
+      "createdBy": "u1",
+      "createdAt": "2026-06-16"
+    },
+    {
+      "id": "t7",
+      "title": "Email notification system",
+      "description": "Send emails when tasks are assigned, updated, or approaching their deadline. Use SendGrid via Cloud Function.",
+      "priority": "medium",
+      "status": "todo",
+      "assignees": [],
+      "dueDate": "2026-07-06",
+      "tags": [
+        "backend",
+        "notif"
+      ],
+      "commentCount": 0,
+      "attachmentCount": 0,
+      "createdBy": "u2",
+      "createdAt": "2026-06-17"
+    },
+    {
+      "id": "t8",
+      "title": "Mobile responsive UI",
+      "description": "Ensure the Kanban board, task modal, and sidebar collapse gracefully on screens below 768 px.",
+      "priority": "low",
+      "status": "todo",
+      "assignees": [
+        "u4",
+        "u5"
+      ],
+      "dueDate": "2026-07-10",
+      "tags": [
+        "frontend",
+        "mobile"
+      ],
+      "commentCount": 0,
+      "attachmentCount": 1,
+      "createdBy": "u1",
+      "createdAt": "2026-06-18"
+    },
+    {
+      "id": "t9",
+      "title": "Write unit & integration tests",
+      "description": "Target 80% coverage for Express routes and React components. Use Jest + React Testing Library.",
+      "priority": "low",
+      "status": "todo",
+      "assignees": [],
+      "dueDate": "2026-07-14",
+      "tags": [
+        "testing",
+        "quality"
+      ],
+      "commentCount": 0,
+      "attachmentCount": 0,
+      "createdBy": "u3",
+      "createdAt": "2026-06-19"
+    }
+  ],
+  "groups": [
+    {
+      "id": "g1",
+      "name": "Backend team",
+      "description": "Firebase, Express and Node engineers",
+      "color": "#4F46E5",
+      "memberIds": [
+        "u1",
+        "u2",
+        "u3"
+      ],
+      "createdBy": "u1",
+      "createdAt": "2026-06-10"
+    },
+    {
+      "id": "g2",
+      "name": "Frontend team",
+      "description": "React UI and design system owners",
+      "color": "#059669",
+      "memberIds": [
+        "u1",
+        "u4",
+        "u5"
+      ],
+      "createdBy": "u1",
+      "createdAt": "2026-06-11"
+    }
+  ],
+  "comments": {
+    "t3": [
+      {
+        "id": "c1",
+        "taskId": "t3",
+        "authorId": "u3",
+        "body": "Auth middleware is merged. Pushing endpoint stubs now.",
+        "edited": false,
+        "createdAt": "2026-06-22T11:15:00Z"
+      },
+      {
+        "id": "c2",
+        "taskId": "t3",
+        "authorId": "u1",
+        "body": "Looks solid — add rate limiting before the sprint demo.",
+        "edited": false,
+        "createdAt": "2026-06-22T14:30:00Z"
+      }
+    ],
+    "t4": [
+      {
+        "id": "c3",
+        "taskId": "t4",
+        "authorId": "u2",
+        "body": "The assignee picker in the modal needs a search filter — 5+ users makes it unwieldy.",
+        "edited": false,
+        "createdAt": "2026-06-23T09:00:00Z"
+      },
+      {
+        "id": "c4",
+        "taskId": "t4",
+        "authorId": "u1",
+        "body": "Added. Also capped at 20 assignees to match Firestore array-contains limits.",
+        "edited": true,
+        "createdAt": "2026-06-23T10:00:00Z"
+      }
+    ]
+  }
+}
