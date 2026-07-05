@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import admin from "firebase-admin";
-import { SEED_COMMENTS, SEED_GROUPS, SEED_TASKS, SEED_USERS } from "../../frontend/src/data/constants.js";
+import { SEED_COMMENTS, SEED_GROUPS, SEED_TASKS, SEED_USERS } from "./constants.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const localDbPath = path.join(__dirname, "localDb.json");
