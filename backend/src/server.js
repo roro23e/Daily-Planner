@@ -52,6 +52,11 @@ app.post("/api/auth/login", asyncRoute(async (req, res) => {
 }));
 
 app.post("/api/auth/register", asyncRoute(async (req, res) => {
+  const existing = await findUserByEmail(req.body.email ?? "");
+  if (existing) {
+    res.status(409).json({ message: "An account with this email already exists." });
+    return;
+  }
   const saved = await saveUser(req.body);
   res.status(201).json(saved);
 }));

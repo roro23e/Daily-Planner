@@ -20,7 +20,16 @@ export default function TaskCard({ task, onEdit, onDelete, onStatusChange, onVie
     >
       {/* Title row */}
       <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:7}}>
-        <p style={{fontSize:13,fontWeight:600,color:"#0F172A",lineHeight:1.45,flex:1,paddingRight:8}}>{task.title}</p>
+        <div style={{display:"flex",alignItems:"center",gap:8,flex:1,paddingRight:8}}>
+          <div
+            onClick={e => { e.stopPropagation(); onStatusChange(task.id, task.status === "done" ? "todo" : "done"); }}
+            style={{width:18,height:18,borderRadius:"50%",border:`2px solid ${task.status === "done" ? "#059669" : "#CBD5E1"}`,background:task.status === "done" ? "#059669" : "transparent",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,cursor:"pointer",transition:"all .15s"}}
+            title={task.status === "done" ? "Mark as active" : "Mark as done"}
+          >
+            {task.status === "done" && <i className="ti ti-check" style={{fontSize:10,color:"#fff",fontWeight:700}} aria-hidden="true" />}
+          </div>
+          <p style={{fontSize:13,fontWeight:600,color:task.status === "done" ? "#94A3B8" : "#0F172A",lineHeight:1.45,textDecoration:task.status === "done" ? "line-through" : "none"}}>{task.title}</p>
+        </div>
         <div style={{display:"flex",gap:2,flexShrink:0,opacity:hovered?1:0,transition:"opacity .15s"}}>
           {canEdit && (
             <button onClick={e => {e.stopPropagation(); onEdit(task);}} style={{color:"#94A3B8",fontSize:14,padding:"2px 4px",borderRadius:5}} title="Edit">
@@ -65,7 +74,7 @@ export default function TaskCard({ task, onEdit, onDelete, onStatusChange, onVie
       </div>
 
       {/* Quick-move buttons */}
-      {hovered && task.status !== "done" && (
+      {hovered && (
         <div onClick={e => e.stopPropagation()} style={{marginTop:10,display:"flex",gap:6,flexWrap:"wrap"}}>
           {Object.entries(STATUS_CFG).filter(([k]) => k !== task.status).map(([k, v]) => (
             <button key={k} onClick={() => onStatusChange(task.id, k)} style={{fontSize:11,padding:"3px 9px",borderRadius:5,border:`1px solid ${v.accent}`,background:v.bg,color:v.color,fontWeight:600,cursor:"pointer"}}>

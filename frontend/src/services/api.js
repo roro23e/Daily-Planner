@@ -58,6 +58,9 @@ export const api = {
     () => request("/auth/register", { method: "POST", body: JSON.stringify(user) }),
     () => {
       const db = readLocalDb();
+      if (db.users.some(u => u.email.toLowerCase() === user.email.toLowerCase())) {
+        throw new Error("An account with this email already exists.");
+      }
       const saved = { ...user, uid: user.uid ?? crypto.randomUUID(), role: "member", isActive: true };
       db.users.push(saved);
       writeLocalDb(db);

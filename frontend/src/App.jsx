@@ -37,6 +37,8 @@ export default function App() {
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [search, setSearch] = useState("");
   const [filterPriority, setFilterPriority] = useState("all");
+  const [filterStatus, setFilterStatus] = useState("all");
+  const [filterTag, setFilterTag] = useState("all");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [loadingWorkspace, setLoadingWorkspace] = useState(true);
 
@@ -75,6 +77,7 @@ export default function App() {
 
   const login = user => {
     setCurrentUser(user);
+    setPage("tasks");
     setScreen("app");
   };
 
@@ -85,6 +88,7 @@ export default function App() {
       return next;
     });
     setCurrentUser(user);
+    setPage("tasks");
     setScreen("app");
   };
 
@@ -154,7 +158,11 @@ export default function App() {
     const q = search.toLowerCase();
     const matchQ = !q || t.title.toLowerCase().includes(q) || (t.description ?? "").toLowerCase().includes(q);
     const matchP = filterPriority === "all" || t.priority === filterPriority;
-    return matchQ && matchP;
+    const matchS = filterStatus === "all"
+      || (filterStatus === "active" && t.status !== "done")
+      || (filterStatus === "completed" && t.status === "done");
+    const matchT = filterTag === "all" || (Array.isArray(t.tags) ? t.tags.includes(filterTag) : (t.tags ?? "").split(",").map(s => s.trim()).includes(filterTag));
+    return matchQ && matchP && matchS && matchT;
   });
 
   if (loadingWorkspace) {
@@ -187,6 +195,10 @@ export default function App() {
             setSearch={setSearch}
             filterPriority={filterPriority}
             setFilterPriority={setFilterPriority}
+            filterStatus={filterStatus}
+            setFilterStatus={setFilterStatus}
+            filterTag={filterTag}
+            setFilterTag={setFilterTag}
           />
 
           <div style={{flex:1,overflowY:"auto",padding:"22px 24px",display:"flex",flexDirection:"column"}}>

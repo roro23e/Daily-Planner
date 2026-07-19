@@ -6,11 +6,23 @@ import { Input, Textarea, Select } from "../ui/FormFields.jsx";
 import { Spinner } from "../ui/Badges.jsx";
 import AssigneePicker from "../ui/AssigneePicker.jsx";
 
+const LABEL_CHIPS = [
+  { value:"Work",      color:"#4F46E5", bg:"#EEF2FF" },
+  { value:"Personal",  color:"#7C3AED", bg:"#F5F3FF" },
+  { value:"Urgent",    color:"#E11D48", bg:"#FFF1F2" },
+  { value:"Design",    color:"#D97706", bg:"#FFFBEB" },
+  { value:"Development",color:"#0284C7", bg:"#F0F9FF" },
+  { value:"Meeting",   color:"#059669", bg:"#ECFDF5" },
+];
+
 export default function TaskModal({ task, onSave, onClose, currentUser, users, toast }) {
   const isEdit = !!task;
+  const initialTags = task
+    ? (Array.isArray(task.tags) ? task.tags : (task.tags ?? "").split(",").map(t => t.trim()).filter(Boolean))
+    : [];
   const [form, setForm] = useState(task ?? {
     title:"", description:"", priority:"medium", status:"todo",
-    assignees:[], dueDate:"", tags:"",
+    assignees:[currentUser?.uid].filter(Boolean), dueDate:"", tags: initialTags,
   });
   const [errors,  setErrors]  = useState({});
   const [saving,  setSaving]  = useState(false);
@@ -18,10 +30,21 @@ export default function TaskModal({ task, onSave, onClose, currentUser, users, t
   const set  = k => v => setForm(p => ({...p, [k]: v}));
   const setE = k => e => set(k)(e.target.value);
 
+  const toggleLabel = label => {
+    setForm(p => {
+      const current = Array.isArray(p.tags) ? p.tags : (p.tags ?? "").split(",").map(t => t.trim()).filter(Boolean);
+      const next = current.includes(label) ? current.filter(t => t !== label) : [...current, label];
+      return { ...p, tags: next };
+    });
+  };
+
+  const currentTags = Array.isArray(form.tags) ? form.tags : (form.tags ?? "").split(",").map(t => t.trim()).filter(Boolean);
+
   const validate = () => {
     const e = {};
     if (!form.title.trim())    e.title = "Title is required";
     if (form.title.length > 200) e.title = "Title must be 200 chars or less";
+    if (!form.dueDate) e.dueDate = "Due date is required";
     return e;
   };
 
@@ -30,9 +53,9 @@ export default function TaskModal({ task, onSave, onClose, currentUser, users, t
     if (Object.keys(e).length) { setErrors(e); return; }
     setSaving(true);
     await new Promise(r => setTimeout(r, 400));
-    const tagsArr = typeof form.tags === "string"
-      ? form.tags.split(",").map(t => t.trim()).filter(Boolean)
-      : form.tags;
+    const tagsArr = Array.isArray(form.tags)
+      ? form.tags
+      : (form.tags ?? "").split(",").map(t => t.trim()).filter(Boolean);
     await onSave({
       ...form,
       tags:          tagsArr,
@@ -55,6 +78,7 @@ export default function TaskModal({ task, onSave, onClose, currentUser, users, t
       wide
       footer={<>
         <Btn variant="secondary" onClick={onClose}>Cancel</Btn>
+        <div style={{flex:1}} />
         <Btn onClick={save} disabled={saving} icon={saving ? "ti-loader-2" : isEdit ? "ti-device-floppy" : "ti-plus"}>
           {saving ? <><Spinner size={14} /> Saving…</> : isEdit ? "Save changes" : "Create task"}
         </Btn>
@@ -74,11 +98,30 @@ export default function TaskModal({ task, onSave, onClose, currentUser, users, t
           <option value="done">Done</option>
         </Select>
         <div style={{marginBottom:14}}>
-          <label htmlFor="due" style={{display:"block",fontSize:13,fontWeight:500,color:"#334155",marginBottom:5}}>Due date</label>
-          <input type="date" id="due" value={form.dueDate} onChange={setE("dueDate")} />
+          <label htmlFor="due" style={{display:"block",fontSize:13,fontWeight:500,color:"#334155",marginBottom:5}}>Due date *</label>
+          <input type="date" id="due" value={form.dueDate} onChange={setE("dueDate")} max="2099-12-31" style={{borderColor:errors.dueDate ? "#F43F5E" : undefined}} />
+          {errors.dueDate && <p style={{fontSize:12,color:"#E11D48",marginTop:4}}>{errors.dueDate}</p>}
         </div>
       </div>
-      <Input label="Tags" id="tags" value={typeof form.tags === "string" ? form.tags : (form.tags ?? []).join(",")} onChange={setE("tags")} placeholder="backend, api, design  (comma-separated)" />
+      <div style={{marginBottom:14}}>
+        <label style={{display:"block",fontSize:13,fontWeight:500,color:"#334155",marginBottom:6}}>Labels</label>
+        <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+          {LABEL_CHIPS.map(chip => {
+            const active = currentTags.includes(chip.value);
+            return (
+              <button
+                key={chip.value}
+                type="button"
+                onClick={() => toggleLabel(chip.value)}
+                style={{fontSize:12,fontWeight:500,padding:"5px 12px",borderRadius:20,border:`1.5px solid ${active ? chip.color : "#E2E8F0"}`,background:active ? chip.bg : "#fff",color:active ? chip.color : "#64748B",cursor:"pointer",transition:"all .12s"}}
+              >
+                {active && <i className="ti ti-check" style={{fontSize:11,marginRight:3}} aria-hidden="true" />}
+                {chip.value}
+              </button>
+            );
+          })}
+        </div>
+      </div>
       <AssigneePicker value={form.assignees} onChange={set("assignees")} currentUser={currentUser} users={users} />
     </Modal>
   );
