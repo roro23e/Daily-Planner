@@ -106,6 +106,7 @@ export default function TeamView({ tasks, groups, users = USERS, onSaveGroup, on
             onViewTask={onViewTask}
             currentUser={currentUser}
             users={users}
+            toast={toast}
           />
         ) : (
           /* All-members overview */

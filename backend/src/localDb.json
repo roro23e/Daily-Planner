@@ -39,6 +39,15 @@
       "initials": "CP",
       "color": "#E11D48",
       "role": "member"
+    },
+    {
+      "name": "john doe",
+      "email": "johndoe@taskflow.io",
+      "initials": "JD",
+      "color": "#4F46E5",
+      "role": "member",
+      "uid": "umryrxs35jckkj",
+      "isActive": true
     }
   ],
   "tasks": [
@@ -124,7 +133,7 @@
       "title": "Dashboard analytics",
       "description": "Display task completion rates, team workload distribution, and a burndown chart using Recharts.",
       "priority": "medium",
-      "status": "in-progress",
+      "status": "done",
       "assignees": [
         "u2",
         "u5"
@@ -137,7 +146,8 @@
       "commentCount": 1,
       "attachmentCount": 3,
       "createdBy": "u2",
-      "createdAt": "2026-06-15"
+      "createdAt": "2026-06-15",
+      "completedAt": "2026-07-24T10:12:46.175Z"
     },
     {
       "id": "t6",
@@ -210,7 +220,8 @@
       "commentCount": 0,
       "attachmentCount": 0,
       "createdBy": "u3",
-      "createdAt": "2026-06-19"
+      "createdAt": "2026-06-19",
+      "projectId": "p2"
     }
   ],
   "groups": [

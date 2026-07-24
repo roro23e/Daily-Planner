@@ -25,6 +25,13 @@ export const setRuntimeUsers = users => {
 };
 
 // ─── Seed tasks ───────────────────────────────────────────────────────────────
+// ─── Seed projects ────────────────────────────────────────────────────────────
+export const SEED_PROJECTS = [
+  { id:"p1", name:"Internal Tools",   color:"#4F46E5" },
+  { id:"p2", name:"Client — Acme Co", color:"#0284C7" },
+  { id:"p3", name:"Client — Nova Inc",color:"#059669" },
+];
+
 export const SEED_TASKS = [
   { id:"t1", title:"Design login & register screens",  description:"Wireframes and high-fidelity mockups for the full auth flow including error states and mobile breakpoints.", priority:"high",   status:"done",        assignees:["u1","u2"], dueDate:"2026-06-18", tags:["design","auth"],     commentCount:3, attachmentCount:1, createdBy:"u1", createdAt:"2026-06-10" },
   { id:"t2", title:"Firebase Auth integration",        description:"Wire up email/password and Google OAuth. Handle token refresh and session persistence in localStorage.",      priority:"high",   status:"done",        assignees:["u2"],       dueDate:"2026-06-20", tags:["backend","auth"],    commentCount:5, attachmentCount:0, createdBy:"u1", createdAt:"2026-06-11" },

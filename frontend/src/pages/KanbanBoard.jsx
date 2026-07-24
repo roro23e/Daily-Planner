@@ -1,10 +1,30 @@
 import { STATUS_CFG } from "../data/constants.js";
 import { Badge } from "../components/ui/Badges.jsx";
 import TaskCard from "../components/tasks/TaskCard.jsx";
+import { buildShareText } from "../data/helpers.js";
 
-export default function KanbanBoard({ tasks, onEdit, onDelete, onStatusChange, onView, currentUser, onNewTask }) {
+export default function KanbanBoard({ tasks, onEdit, onDelete, onStatusChange, onView, currentUser, onNewTask, toast, projects = [] }) {
+  const shareList = async () => {
+    const text = buildShareText(tasks, "TaskFlow — All tasks");
+    try {
+      await navigator.clipboard.writeText(text);
+      toast?.show?.("Task list copied to clipboard", "success");
+    } catch {
+      window.location.href = `mailto:?subject=TaskFlow task list&body=${encodeURIComponent(text)}`;
+    }
+  };
+
   return (
-    <div style={{display:"flex",gap:18,overflowX:"auto",flex:1,paddingBottom:8,alignItems:"flex-start"}}>
+    <div style={{display:"flex",flexDirection:"column",flex:1,minHeight:0}}>
+      <div style={{display:"flex",justifyContent:"flex-end",marginBottom:12}}>
+        <button
+          onClick={shareList}
+          style={{display:"flex",alignItems:"center",gap:6,fontSize:13,fontWeight:500,color:"#4F46E5",background:"#EEF2FF",border:"1px solid #C7D2FE",borderRadius:8,padding:"6px 12px",cursor:"pointer"}}
+        >
+          <i className="ti ti-share" style={{fontSize:15}} aria-hidden="true" /> Share list
+        </button>
+      </div>
+      <div style={{display:"flex",gap:18,overflowX:"auto",flex:1,paddingBottom:8,alignItems:"flex-start"}}>
       {Object.entries(STATUS_CFG).map(([key, col]) => {
         const colTasks = tasks.filter(t => t.status === key);
         return (
@@ -27,6 +47,7 @@ export default function KanbanBoard({ tasks, onEdit, onDelete, onStatusChange, o
                   onStatusChange={onStatusChange}
                   onView={onView}
                   currentUser={currentUser}
+                  projects={projects}
                 />
               ))}
               {colTasks.length === 0 && (
@@ -49,6 +70,7 @@ export default function KanbanBoard({ tasks, onEdit, onDelete, onStatusChange, o
           </div>
         );
       })}
+      </div>
     </div>
   );
 }

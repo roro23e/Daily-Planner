@@ -15,7 +15,7 @@ const LABEL_CHIPS = [
   { value:"Meeting",   color:"#059669", bg:"#ECFDF5" },
 ];
 
-export default function TaskModal({ task, onSave, onClose, currentUser, users, toast }) {
+export default function TaskModal({ task, onSave, onClose, currentUser, users, toast, projects = [] }) {
   const isEdit = !!task;
   const initialTags = task
     ? (Array.isArray(task.tags) ? task.tags : (task.tags ?? "").split(",").map(t => t.trim()).filter(Boolean))
@@ -103,6 +103,10 @@ export default function TaskModal({ task, onSave, onClose, currentUser, users, t
           {errors.dueDate && <p style={{fontSize:12,color:"#E11D48",marginTop:4}}>{errors.dueDate}</p>}
         </div>
       </div>
+      <Select label="Project / client" id="projectId" value={form.projectId ?? ""} onChange={setE("projectId")}>
+        <option value="">No project</option>
+        {projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+      </Select>
       <div style={{marginBottom:14}}>
         <label style={{display:"block",fontSize:13,fontWeight:500,color:"#334155",marginBottom:6}}>Labels</label>
         <div style={{display:"flex",flexWrap:"wrap",gap:6}}>

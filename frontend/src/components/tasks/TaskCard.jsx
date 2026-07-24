@@ -4,12 +4,13 @@ import { fmtDate, isOverdue } from "../../data/helpers.js";
 import { PriorityBadge, Tag } from "../ui/Badges.jsx";
 import { AvatarStack } from "../ui/Avatar.jsx";
 
-export default function TaskCard({ task, onEdit, onDelete, onStatusChange, onView, currentUser }) {
+export default function TaskCard({ task, onEdit, onDelete, onStatusChange, onView, currentUser, projects = [] }) {
   const [hovered, setHovered] = useState(false);
   const ov = isOverdue(task.dueDate, task.status);
   const isAdmin  = currentUser?.role === "admin";
   const canEdit  = isAdmin || currentUser?.role === "manager" || task.createdBy === currentUser?.uid;
   const pm = PRIORITY_CFG[task.priority];
+  const project = projects.find(p => p.id === task.projectId);
 
   return (
     <div
@@ -51,6 +52,11 @@ export default function TaskCard({ task, onEdit, onDelete, onStatusChange, onVie
 
       {/* Badges */}
       <div style={{display:"flex",alignItems:"center",flexWrap:"wrap",gap:6,marginBottom:9}}>
+        {project && (
+          <span style={{fontSize:11,fontWeight:600,padding:"2px 8px",borderRadius:5,background:project.color+"15",color:project.color,border:`1px solid ${project.color}30`}}>
+            {project.name}
+          </span>
+        )}
         <PriorityBadge priority={task.priority} />
         {task.tags?.slice(0, 2).map(t => <Tag key={t} label={t} />)}
         {task.tags?.length > 2 && <span style={{fontSize:11,color:"#94A3B8"}}>+{task.tags.length - 2}</span>}

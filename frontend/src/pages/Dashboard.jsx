@@ -1,5 +1,5 @@
 import { USERS, STATUS_CFG, PRIORITY_CFG } from "../data/constants.js";
-import { isOverdue } from "../data/helpers.js";
+import { isOverdue, isToday } from "../data/helpers.js";
 import Btn from "../components/ui/Btn.jsx";
 import { StatusPill } from "../components/ui/Badges.jsx";
 
@@ -10,6 +10,8 @@ export default function Dashboard({ tasks, currentUser, users = USERS, onNewTask
   const overdue = tasks.filter(t => isOverdue(t.dueDate, t.status)).length;
   const mine    = tasks.filter(t => t.assignees.includes(currentUser?.uid) && t.status !== "done");
   const pct     = total ? Math.round((done / total) * 100) : 0;
+  const completedToday = tasks.filter(t => isToday(t.completedAt)).length;
+  const dailyRate = total ? Math.round((completedToday / total) * 100) : 0;
 
   const workload = users.map(u => ({
     ...u,
@@ -22,6 +24,7 @@ export default function Dashboard({ tasks, currentUser, users = USERS, onNewTask
     { label:"In progress",  value:inProg,  icon:"ti-clock",           color:"#0284C7", bg:"#F0F9FF" },
     { label:"Completed",    value:done,    icon:"ti-circle-check",    color:"#059669", bg:"#ECFDF5" },
     { label:"Overdue",      value:overdue, icon:"ti-alert-circle",    color:"#E11D48", bg:"#FFF1F2" },
+    { label:"Completed today", value:completedToday, icon:"ti-calendar-check", color:"#7C3AED", bg:"#F5F3FF" },
   ];
 
   return (
@@ -39,7 +42,7 @@ export default function Dashboard({ tasks, currentUser, users = USERS, onNewTask
       </div>
 
       {/* Stat cards */}
-      <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:14,marginBottom:22}}>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:14,marginBottom:22}}>
         {STATS.map(s => (
           <div key={s.label} style={{background:"#fff",border:"1px solid #E2E8F0",borderRadius:12,padding:"16px 18px"}}>
             <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
@@ -61,6 +64,7 @@ export default function Dashboard({ tasks, currentUser, users = USERS, onNewTask
             <h3 style={{fontSize:15,fontWeight:600,color:"#0F172A"}}>Overall progress</h3>
             <span style={{fontSize:13,fontWeight:700,color:"#4F46E5"}}>{pct}%</span>
           </div>
+          <p style={{fontSize:12,color:"#94A3B8",marginTop:-10,marginBottom:14}}>{completedToday} task{completedToday !== 1 ? "s" : ""} completed today ({dailyRate}% of total)</p>
           <div style={{height:7,background:"#F1F5F9",borderRadius:4,overflow:"hidden",marginBottom:18}}>
             <div style={{width:`${pct}%`,height:"100%",background:"linear-gradient(90deg,#4F46E5,#7C3AED)",borderRadius:4,transition:"width .6s"}} />
           </div>

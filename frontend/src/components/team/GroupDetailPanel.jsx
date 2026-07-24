@@ -1,5 +1,5 @@
 import { USERS, STATUS_CFG, PRIORITY_CFG } from "../../data/constants.js";
-import { fmtDate, isOverdue } from "../../data/helpers.js";
+import { fmtDate, isOverdue, buildShareText } from "../../data/helpers.js";
 import Btn from "../ui/Btn.jsx";
 import { PriorityBadge } from "../ui/Badges.jsx";
 import { AvatarStack } from "../ui/Avatar.jsx";
@@ -7,13 +7,23 @@ import { AvatarStack } from "../ui/Avatar.jsx";
 export default function GroupDetailPanel({
   group, tasks,
   onClose, onEditGroup, onDeleteGroup, onAssignTask,
-  onStatusChange, onViewTask, currentUser, users = USERS,
+  onStatusChange, onViewTask, currentUser, users = USERS, toast,
 }) {
   const groupTasks = tasks.filter(t => t.groupId === group.id);
   const members    = users.filter(u => group.memberIds.includes(u.uid));
   const isAdmin    = currentUser?.role === "admin";
   const isManager  = currentUser?.role === "manager";
   const canManage  = isAdmin || isManager || group.createdBy === currentUser?.uid;
+
+  const shareGroup = async () => {
+    const text = buildShareText(groupTasks, `${group.name} — task list`);
+    try {
+      await navigator.clipboard.writeText(text);
+      toast?.show?.("Task list copied to clipboard", "success");
+    } catch {
+      window.location.href = `mailto:?subject=${encodeURIComponent(group.name + " task list")}&body=${encodeURIComponent(text)}`;
+    }
+  };
 
   return (
     <div className="anim-fade" style={{background:"#fff",border:"1px solid #E2E8F0",borderRadius:14,overflow:"hidden",display:"flex",flexDirection:"column",flex:1,minHeight:0}}>
@@ -39,6 +49,7 @@ export default function GroupDetailPanel({
           </div>
         </div>
         <div style={{display:"flex",gap:8,flexShrink:0,flexWrap:"wrap"}}>
+          <Btn size="sm" variant="secondary" icon="ti-share" onClick={shareGroup}>Share list</Btn>
           <Btn size="sm" variant="primary" icon="ti-plus" onClick={() => onAssignTask(group)}>Assign task</Btn>
           {canManage && <Btn size="sm" variant="secondary" icon="ti-edit" onClick={() => onEditGroup(group)}>Edit</Btn>}
           {canManage && <Btn size="sm" variant="danger"    icon="ti-trash" onClick={() => onDeleteGroup(group.id)}>Delete</Btn>}

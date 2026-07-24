@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useGlobalStyle } from "./hooks/useGlobalStyle.js";
 import { useToast } from "./hooks/useToast.js";
-import { SEED_COMMENTS, SEED_GROUPS, SEED_TASKS, SEED_USERS, STATUS_CFG, setRuntimeUsers } from "./data/constants.js";
+import { SEED_COMMENTS, SEED_GROUPS, SEED_PROJECTS, SEED_TASKS, SEED_USERS, STATUS_CFG, setRuntimeUsers } from "./data/constants.js";
 import { api } from "./services/api.js";
 
 import Sidebar from "./components/layout/Sidebar.jsx";
@@ -32,6 +32,7 @@ export default function App() {
   const [users, setUsers] = useState(SEED_USERS);
   const [tasks, setTasks] = useState(SEED_TASKS);
   const [groups, setGroups] = useState(SEED_GROUPS);
+  const [projects] = useState(SEED_PROJECTS); // static for now — no CRUD needed yet
   const [comments, setComments] = useState(SEED_COMMENTS);
   const [page, setPage] = useState("dashboard");
   const [modal, setModal] = useState(null);
@@ -141,9 +142,12 @@ export default function App() {
   const changeStatus = async (id, status) => {
     const current = tasks.find(t => t.id === id);
     if (!current) return;
-    const saved = await api.saveTask({ ...current, status });
+    const completedAt = status === "done"
+      ? (current.completedAt ?? new Date().toISOString())
+      : null; // clear it if the task is reopened
+    const saved = await api.saveTask({ ...current, status, completedAt });
     setTasks(prev => prev.map(t => t.id === id ? saved : t));
-    setDetailTask(prev => prev && prev.id === id ? { ...prev, status } : prev);
+    setDetailTask(prev => prev && prev.id === id ? { ...prev, status, completedAt } : prev);
     toast.show("Moved to " + STATUS_CFG[status].label, "success");
   };
 
@@ -262,6 +266,8 @@ export default function App() {
                 onView={setDetailTask}
                 currentUser={currentUser}
                 onNewTask={() => setModal("new")}
+                toast={toast}
+                projects={projects}
               />
             )}
             {page === "my-tasks" && (
@@ -272,6 +278,8 @@ export default function App() {
                 onDelete={id => setDeleteTarget(id)}
                 onStatusChange={changeStatus}
                 onView={setDetailTask}
+                projects={projects}
+                toast={toast}
               />
             )}
             {page === "team" && (
@@ -303,6 +311,7 @@ export default function App() {
           currentUser={currentUser}
           users={visibleUsers}
           toast={toast}
+          projects={projects}
         />
       )}
 
