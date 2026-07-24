@@ -22,6 +22,8 @@ import MyTasksView from "./pages/MyTasks.jsx";
 import TeamView from "./pages/TeamView.jsx";
 import ProfileView from "./pages/Profile.jsx";
 
+const PRIORITY_ORDER = { high: 0, medium: 1, low: 2 };
+
 export default function App() {
   useGlobalStyle();
 
@@ -39,6 +41,7 @@ export default function App() {
   const [filterPriority, setFilterPriority] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterTag, setFilterTag] = useState("all");
+  const [sortBy, setSortBy] = useState("default"); // "default" | "dueDate" | "priority" | "title"
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [loadingWorkspace, setLoadingWorkspace] = useState(true);
 
@@ -74,6 +77,26 @@ export default function App() {
       .finally(() => mounted && setLoadingWorkspace(false));
     return () => { mounted = false; };
   }, []);
+
+  // Keyboard shortcuts: "n" = new task, "/" = focus search
+  useEffect(() => {
+    const handler = e => {
+      const tag = document.activeElement?.tagName;
+      const typing = tag === "INPUT" || tag === "TEXTAREA" || document.activeElement?.isContentEditable;
+      if (typing) return;
+
+      if (e.key === "n" && !modal && !detailTask && screen === "app") {
+        e.preventDefault();
+        setModal("new");
+      }
+      if (e.key === "/" && screen === "app" && (page === "tasks" || page === "my-tasks")) {
+        e.preventDefault();
+        document.querySelector('input[placeholder="Search tasks…"]')?.focus();
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [modal, detailTask, screen, page]);
 
   const login = user => {
     setCurrentUser(user);
@@ -154,16 +177,32 @@ export default function App() {
     setTasks(prev => prev.map(t => t.id === taskId ? { ...t, commentCount: Math.max((comments[taskId] ?? []).length - 1, 0) } : t));
   };
 
-  const filteredTasks = visibleTasks.filter(t => {
-    const q = search.toLowerCase();
-    const matchQ = !q || t.title.toLowerCase().includes(q) || (t.description ?? "").toLowerCase().includes(q);
-    const matchP = filterPriority === "all" || t.priority === filterPriority;
-    const matchS = filterStatus === "all"
-      || (filterStatus === "active" && t.status !== "done")
-      || (filterStatus === "completed" && t.status === "done");
-    const matchT = filterTag === "all" || (Array.isArray(t.tags) ? t.tags.includes(filterTag) : (t.tags ?? "").split(",").map(s => s.trim()).includes(filterTag));
-    return matchQ && matchP && matchS && matchT;
+  const sortTasks = list => [...list].sort((a, b) => {
+    if (sortBy === "dueDate") {
+      if (!a.dueDate && !b.dueDate) return 0;
+      if (!a.dueDate) return 1;
+      if (!b.dueDate) return -1;
+      return new Date(a.dueDate) - new Date(b.dueDate);
+    }
+    if (sortBy === "priority") return PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority];
+    if (sortBy === "title") return a.title.localeCompare(b.title);
+    return 0; // "default" — keep original order
   });
+
+  const filteredTasks = sortTasks(
+    visibleTasks.filter(t => {
+      const q = search.toLowerCase();
+      const matchQ = !q || t.title.toLowerCase().includes(q) || (t.description ?? "").toLowerCase().includes(q);
+      const matchP = filterPriority === "all" || t.priority === filterPriority;
+      const matchS = filterStatus === "all"
+        || (filterStatus === "active" && t.status !== "done")
+        || (filterStatus === "completed" && t.status === "done");
+      const matchT = filterTag === "all" || (Array.isArray(t.tags) ? t.tags.includes(filterTag) : (t.tags ?? "").split(",").map(s => s.trim()).includes(filterTag));
+      return matchQ && matchP && matchS && matchT;
+    })
+  );
+
+  const sortedMyTasks = sortTasks(visibleTasks);
 
   if (loadingWorkspace) {
     return <div style={{height:"100vh",display:"grid",placeItems:"center",background:"#F8FAFC",color:"#64748B",fontSize:14}}>Loading workspace...</div>;
@@ -199,6 +238,8 @@ export default function App() {
             setFilterStatus={setFilterStatus}
             filterTag={filterTag}
             setFilterTag={setFilterTag}
+            sortBy={sortBy}
+            setSortBy={setSortBy}
           />
 
           <div style={{flex:1,overflowY:"auto",padding:"22px 24px",display:"flex",flexDirection:"column"}}>
@@ -225,7 +266,7 @@ export default function App() {
             )}
             {page === "my-tasks" && (
               <MyTasksView
-                tasks={visibleTasks}
+                tasks={sortedMyTasks}
                 currentUser={currentUser}
                 onEdit={t => setModal(t)}
                 onDelete={id => setDeleteTarget(id)}

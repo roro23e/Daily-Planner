@@ -16,6 +16,12 @@ const LABEL_CHIPS = [
   { value:"Meeting",    color:"#059669", bg:"#ECFDF5" },
 ];
 
+const SORT_LABELS = {
+  dueDate:  "Due date",
+  priority: "Priority",
+  title:    "Title (A–Z)",
+};
+
 const PAGE_LABELS = {
   dashboard: "Dashboard",
   tasks:     "All tasks",
@@ -24,7 +30,7 @@ const PAGE_LABELS = {
   profile:   "Profile",
 };
 
-export default function Topbar({ page, collapsed, setCollapsed, onNewTask, search, setSearch, filterPriority, setFilterPriority, filterStatus, setFilterStatus, filterTag, setFilterTag }) {
+export default function Topbar({ page, collapsed, setCollapsed, onNewTask, search, setSearch, filterPriority, setFilterPriority, filterStatus, setFilterStatus, filterTag, setFilterTag, sortBy, setSortBy }) {
   return (
     <div style={{background:"#fff",borderBottom:"1px solid #E2E8F0",padding:"0 22px",flexShrink:0}}>
       <div style={{height:56,display:"flex",alignItems:"center",gap:12}}>
@@ -33,6 +39,27 @@ export default function Topbar({ page, collapsed, setCollapsed, onNewTask, searc
         </button>
 
         <h1 style={{fontSize:16,fontWeight:700,color:"#0F172A",marginRight:4}}>{PAGE_LABELS[page]}</h1>
+
+        {(page === "tasks" || page === "my-tasks") && (
+          <>
+            <select
+              value={sortBy}
+              onChange={e => setSortBy(e.target.value)}
+              style={{height:34,width:"auto",fontSize:13,paddingRight:28,paddingLeft:10}}
+            >
+              <option value="default">Sort: Default</option>
+              <option value="dueDate">Sort: Due date</option>
+              <option value="priority">Sort: Priority</option>
+              <option value="title">Sort: Title (A–Z)</option>
+            </select>
+            {sortBy !== "default" && (
+              <span style={{fontSize:11,fontWeight:500,color:"#4F46E5",background:"#EEF2FF",padding:"4px 9px",borderRadius:12,display:"flex",alignItems:"center",gap:4,whiteSpace:"nowrap"}}>
+                <i className="ti ti-arrows-sort" style={{fontSize:12}} aria-hidden="true" />
+                Sorted by {SORT_LABELS[sortBy]}
+              </span>
+            )}
+          </>
+        )}
 
         {page === "tasks" && (
           <>
@@ -54,7 +81,7 @@ export default function Topbar({ page, collapsed, setCollapsed, onNewTask, searc
         )}
 
         <div style={{flex:1}} />
-        <Btn onClick={onNewTask} icon="ti-plus">New task</Btn>
+        <Btn onClick={onNewTask} icon="ti-plus" title="Press N">New task</Btn>
       </div>
 
       {page === "tasks" && (
